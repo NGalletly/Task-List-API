@@ -21,3 +21,15 @@ model TaskList {
   tasks Task[]
 }
 
+model Task {
+  id String @id @default(cuid())
+  title String
+  completed Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskList TaskList @relation(fields: [taskListId], references: [id])
+  taskListId String
+  
+}
+
+
