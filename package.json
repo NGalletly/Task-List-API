@@ -19,6 +19,7 @@
   "homepage": "https://github.com/NGalletly/Task-List-API#readme",
   "dependencies": {
     "@types/node": "^26.1.2",
+    "prisma": "^7.9.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^7.0.2"

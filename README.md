@@ -62,8 +62,8 @@ npm install typescript  // JS superset with static "type" objects.
 npm install @types/node // allows TS to read Node API.
 npm install ts-node // compiles TS and runs it in 1 step.
 npm install ts-node-dev  // auto-restart on file change
-npm install prisma // cli tool -
-npm install @prisma/client
+npm install prisma // cli tool used during development for generate/migrate commands
+npm install @prisma/client // runtime library which reads prisma.schema
 npm install graphql
 npm install graphql-yoga
 npm install @pothos/core
