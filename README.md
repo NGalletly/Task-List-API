@@ -10,13 +10,13 @@ Schema: Prisma(DB schema) & Pothos(GraphQL schema)
 Database: PostgreSQL, Docker(container/environment)
 Other: Zod(Validation)
 
-Requirments: Docker Desktop
+Requirements: Docker Desktop
 
 # Getting started:
 
 Please start with npm install to install dependencies.
 
-# Check git.ignore
+# Check .gitignore
 
 Ensure the following is in .gitignore:
 
@@ -26,6 +26,7 @@ Ensure the following is in .gitignore:
 node_modules
 dist
 db-data
+/generated/prisma
 ```
 
 # .env
@@ -53,7 +54,19 @@ docker ps
 
 Delete pgadmin-data and init.sql directories for housekeeping if desired.
 
-## Dependency commands
+Once the Docker container is running, add the schema to the database by running the following command:
+
+```
+npx prisma migrate dev --name init
+```
+
+To check GUI of schema use the following command:
+
+```
+npx prisma studio
+```
+
+## Dependency commands / Info
 
 ```
 brew install --cask docker // install Docker desktop
