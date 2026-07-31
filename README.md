@@ -1,1 +1,54 @@
 # Task-List-API
+
+Task List API: Built with TypeScript, GraphQL Yoga, Prisma, GraphQL and Pothos for creating, updating and deleting tasks and tasklist.
+
+# Tech Stack
+
+Languages: Typescript, GraphQL
+Server & Runtime: GraphQL yoga, Node.js
+Schema: Prisma(DB schema) & Pothos(GraphQL schema)
+Database: PostgreSQL, Docker(container/environment)
+Other: Zod(Validation)
+
+Requirments: Docker Desktop
+
+# Getting started:
+
+Please start with npm install to install dependencies.
+
+# Check git.ignore
+
+Ensure the following is in .gitignore:
+
+```
+.env*
+!.env.example
+node_modules
+dist
+db-data
+```
+
+# .env
+
+Create .env file at root directory and paste the contents of .env.example inside.
+
+# Setting up Database Container with Docker
+
+Mac instructions only:
+To install Docker, use the following commands:
+
+```
+brew install --cask docker
+brew install docker-compose
+
+// To turn on the container:
+docker-compose up -d
+
+// To turn off the container:
+docker-compose stop
+
+// To check container health:
+docker ps
+```
+
+Delete pgadmin-data and init.sql directories for housekeeping if desired.
