@@ -52,3 +52,21 @@ docker ps
 ```
 
 Delete pgadmin-data and init.sql directories for housekeeping if desired.
+
+## Dependency commands
+
+```
+brew install --cask docker // install Docker desktop
+brew install docker-compose // docker commands
+npm install typescript  // JS superset with static "type" objects.
+npm install @types/node // allows TS to read Node API.
+npm install ts-node // compiles TS and runs it in 1 step.
+npm install ts-node-dev  // auto-restart on file change
+npm install prisma // cli tool -
+npm install @prisma/client
+npm install graphql
+npm install graphql-yoga
+npm install @pothos/core
+npm install @pothos/plugin-prisma
+
+```

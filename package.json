@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/NGalletly/Task-List-API/issues"
   },
-  "homepage": "https://github.com/NGalletly/Task-List-API#readme"
+  "homepage": "https://github.com/NGalletly/Task-List-API#readme",
+  "dependencies": {
+    "@types/node": "^26.1.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^7.0.2"
+  }
 }
