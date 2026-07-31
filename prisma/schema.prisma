@@ -20,3 +20,4 @@ model TaskList {
   lastUpdated DateTime @updatedAt
   tasks Task[]
 }
+
