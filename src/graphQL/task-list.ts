@@ -18,7 +18,7 @@ builder.queryField("taskLists", (t) =>
   }),
 );
 
-builder.mutationField("createTaskList", (t) =>
+builder.mutationField("addTaskList", (t) =>
   t.prismaField({
     type: "TaskList",
     args: {

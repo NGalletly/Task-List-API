@@ -134,7 +134,7 @@ Example of the response:
 
 ```
 mutation {
-  createTaskList(name: "shopping") {
+  addTaskList(name: "shopping") {
     id
     name
   }
@@ -146,7 +146,7 @@ Example response:
 ```
 {
   "data": {
-    "createTaskList": {
+    "addTaskList": {
       "id": "cmsax523w0000qiy8fpiq48c7",
       "name": "shopping"
     }
@@ -232,7 +232,7 @@ After you have saved a taskList id string/value you can <b>create a new task</b>
 
 ```
 mutation {
-  createTask(title: "Buy Paper", taskListId: "placeholderTaskListId") {
+  addTask(title: "Buy Paper", taskListId: "placeholderTaskListId") {
     id
     title
     completed
