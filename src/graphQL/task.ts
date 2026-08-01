@@ -76,3 +76,22 @@ builder.mutationField("updateTask", (t) =>
     },
   }),
 );
+
+builder.queryField("tasks", (t) =>
+  t.prismaField({
+    type: ["Task"],
+    args: {
+      completed: t.arg.boolean({ required: false }),
+      skip: t.arg.int({ required: false }),
+      take: t.arg.int({ required: false }),
+    },
+    resolve: (query, root, args) =>
+      prisma.task.findMany({
+        ...query,
+        where:
+          args.completed != null ? { completed: args.completed } : undefined,
+        skip: args.skip ?? undefined,
+        take: args.take ?? undefined,
+      }),
+  }),
+);
