@@ -77,9 +77,9 @@ npm install ts-node // compiles TS and runs it in 1 step.
 npm install ts-node-dev  // auto-restart on file change
 npm install prisma // cli tool used during development for generate/migrate commands
 npm install @prisma/client // runtime library which reads prisma.schema
-npm install graphql
-npm install graphql-yoga
-npm install @pothos/core
-npm install @pothos/plugin-prisma
+npm install graphql //type based query language
+npm install graphql-yoga // HTTP server, port listener, takes requests and passes to graphQL to execute and sends back response.
+npm install @pothos/core //schema builder able to define graphQL with type inferrence
+npm install @pothos/plugin-prisma // add-on for pothos/core specifically to speak to prisma
 
 ```
