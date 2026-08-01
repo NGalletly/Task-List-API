@@ -68,6 +68,7 @@ builder.mutationField("updateTask", (t) =>
       const data: { title?: string; completed?: boolean } = {};
       if (args.title != null) data.title = args.title;
       if (args.completed != null) data.completed = args.completed;
+
       return prisma.task.update({
         ...query,
         where: { id: args.id },
@@ -77,21 +78,48 @@ builder.mutationField("updateTask", (t) =>
   }),
 );
 
+const TaskListResult = builder.simpleObject("TaskListResult", {
+  fields: (t) => ({
+    items: t.field({ type: ["Task"] }),
+    totalCount: t.int(),
+    hasMore: t.boolean(),
+  }),
+});
+
 builder.queryField("tasks", (t) =>
-  t.prismaField({
-    type: ["Task"],
+  t.field({
+    type: TaskListResult,
     args: {
       completed: t.arg.boolean({ required: false }),
+      taskListId: t.arg.id({ required: false }),
+
       skip: t.arg.int({ required: false }),
       take: t.arg.int({ required: false }),
     },
-    resolve: (query, root, args) =>
-      prisma.task.findMany({
-        ...query,
-        where:
-          args.completed != null ? { completed: args.completed } : undefined,
-        skip: args.skip ?? undefined,
-        take: args.take ?? undefined,
-      }),
+    resolve: async (root, args) => {
+      const where = {
+        ...(args.completed != null ? { completed: args.completed } : {}),
+        ...(args.taskListId != null ? { taskListId: args.taskListId } : {}),
+      };
+
+      const skip = args.skip ?? 0;
+      const take = args.take ?? 20;
+
+      const [items, totalCount] = await Promise.all([
+        prisma.task.findMany({
+          where,
+          skip,
+          take,
+          orderBy: { createdAt: "asc" },
+        }),
+        prisma.task.count({ where }),
+      ]);
+
+      return {
+        items,
+        totalCount,
+        hasMore: skip + items.length < totalCount,
+      };
+    },
   }),
 );
