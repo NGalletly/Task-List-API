@@ -12,3 +12,46 @@ builder.prismaObject("Task", {
     taskListId: t.exposeID("taskListId"),
   }),
 });
+
+builder.queryField("task", (t) =>
+  t.prismaField({
+    type: "Task",
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: (query, root, args) =>
+      prisma.task.findUnique({ ...query, where: { id: args.id } }),
+  }),
+);
+
+builder.mutationField("createTask", (t) =>
+  t.prismaField({
+    type: "Task",
+    args: {
+      title: t.arg.string({ required: true }),
+      taskListId: t.arg.id({ required: true }),
+    },
+    resolve: (query, root, args) =>
+      prisma.task.create({
+        ...query,
+        data: { title: args.title, taskListId: args.taskListId },
+      }),
+  }),
+);
+
+builder.mutationField("deleteTask", (t) =>
+  t.field({
+    type: "Boolean",
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: async (root, args) => {
+      await prisma.task.delete({
+        where: {
+          id: args.id,
+        },
+      });
+      return true;
+    },
+  }),
+);
