@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/NGalletly/Task-List-API#readme",
   "dependencies": {
+    "@pothos/core": "^4.13.1",
+    "@pothos/plugin-prisma": "^4.15.0",
     "@types/node": "^26.1.2",
+    "graphql": "^16.14.2",
+    "graphql-yoga": "^5.21.2",
     "prisma": "^7.9.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
