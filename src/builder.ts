@@ -3,12 +3,13 @@ import SchemaBuilder from "@pothos/core";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import type PrismaTypes from "./generated/pothos-types";
 import { getDatamodel } from "./generated/pothos-types";
+import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 
 export const builder = new SchemaBuilder<{
   Scalars: { DateTime: { Input: Date; Output: Date } };
   PrismaTypes: PrismaTypes;
 }>({
-  plugins: [PrismaPlugin],
+  plugins: [PrismaPlugin, SimpleObjectsPlugin],
   prisma: { client: prisma, dmmf: getDatamodel() },
 });
 
