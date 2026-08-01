@@ -18,4 +18,5 @@ builder.scalarType("DateTime", {
 });
 
 builder.queryType({});
-// builder.mutationType({});
+
+builder.mutationType({});
