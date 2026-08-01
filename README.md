@@ -446,5 +446,6 @@ npm install @pothos/plugin-prisma // add-on for pothos/core specifically to spea
 npm install @prisma/adapter-pg // prisma 7 package - driver adapter
 npm install dotenv // package bridging .env to process.env
 npm install @pothos/plugin-simple-objects // allows defining extra plain GraphQL types
+npm install zod // typescript schema validation, checks that data matches expected shape at runtime
 
 ```
