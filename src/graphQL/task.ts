@@ -55,3 +55,24 @@ builder.mutationField("deleteTask", (t) =>
     },
   }),
 );
+
+builder.mutationField("updateTask", (t) =>
+  t.prismaField({
+    type: "Task",
+    args: {
+      id: t.arg.id({ required: true }),
+      title: t.arg.string({ required: false }),
+      completed: t.arg.boolean({ required: false }),
+    },
+    resolve: (query, root, args) => {
+      const data: { title?: string; completed?: boolean } = {};
+      if (args.title != null) data.title = args.title;
+      if (args.completed != null) data.completed = args.completed;
+      return prisma.task.update({
+        ...query,
+        where: { id: args.id },
+        data,
+      });
+    },
+  }),
+);
