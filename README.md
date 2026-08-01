@@ -66,6 +66,23 @@ To check GUI of schema use the following command:
 npx prisma studio
 ```
 
+# Run the server
+
+Use the following command to run the server listener:
+
+```
+npm run dev
+```
+
+If migrations go out of sync or have trouble, try clearing cache and remigrating:
+
+```
+docker-compose down
+rm -rf db-data
+docker-compose up -d
+npx prisma migrate dev --name init
+```
+
 ## Dependency commands / Info
 
 ```
@@ -73,13 +90,14 @@ brew install --cask docker // install Docker desktop
 brew install docker-compose // docker commands
 npm install typescript  // JS superset with static "type" objects.
 npm install @types/node // allows TS to read Node API.
-npm install ts-node // compiles TS and runs it in 1 step.
-npm install ts-node-dev  // auto-restart on file change
+npm install -D tsx // modern TS runner + watch mode, replaced ts-node-dev for Prisma 7 compatibility
 npm install prisma // cli tool used during development for generate/migrate commands
 npm install @prisma/client // runtime library which reads prisma.schema
 npm install graphql //type based query language
 npm install graphql-yoga // HTTP server, port listener, takes requests and passes to graphQL to execute and sends back response.
 npm install @pothos/core //schema builder able to define graphQL with type inferrence
 npm install @pothos/plugin-prisma // add-on for pothos/core specifically to speak to prisma
+npm install @prisma/adapter-pg // prisma 7 package - driver adapter
+npm install dotenv    // package bridging .env to process.env
 
 ```
