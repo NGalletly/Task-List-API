@@ -553,5 +553,6 @@ npm install @prisma/adapter-pg // prisma 7 package - driver adapter
 npm install dotenv // package bridging .env to process.env
 npm install @pothos/plugin-simple-objects // allows defining extra plain GraphQL types
 npm install zod // typescript schema validation, checks that data matches expected shape at runtime
+npm install -D vitest // testing framework for running unit or integration tests
 
 ```
