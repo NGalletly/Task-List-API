@@ -16,7 +16,7 @@ Requirements: Docker Desktop
 
 Please start with npm install to install dependencies.
 
-# Check .gitignore
+## Check .gitignore
 
 Ensure the following is in .gitignore:
 
@@ -30,11 +30,11 @@ db-data
 src/generated
 ```
 
-# .env
+## .env
 
 Create .env file at root directory and paste the contents of .env.example inside.
 
-# Setting up Database Container with Docker
+## Setting up Database Container with Docker
 
 Mac instructions only:
 To install Docker, use the following commands:
@@ -67,7 +67,7 @@ To check GUI of schema use the following command:
 npx prisma studio
 ```
 
-# Seed the database
+## Seed the database
 
 To seed the database with sample task and tasklist data use the following command:
 
@@ -75,7 +75,7 @@ To seed the database with sample task and tasklist data use the following comman
 npm run seed
 ```
 
-# Run the server
+## Run the server
 
 Use the following command to run the server listener:
 
@@ -98,7 +98,7 @@ Task and TaskList ids are generated automatically, so you'll need a real
 one first. Run the `taskLists` query below, copy an `id` from the
 response, then paste it into the query:
 
-# Task List
+## -- Task List --
 
 ### To get all task lists with their tasks use the following query:
 
@@ -172,9 +172,9 @@ Example Response:
 }
 ```
 
-# Task
+## -- Task --
 
-To get obtain a task id string/value you will need to list all tasks using the following query:
+To obtain a task id string/value you will need to list all tasks using the following query:
 
 ```
 query {
@@ -285,7 +285,7 @@ mutation {
 }
 ```
 
-# TASKS
+## -- TASKS --
 
 ### Get all tasks
 
@@ -404,7 +404,7 @@ Note: the example response property "hasMore": false
 }
 ```
 
-## Notes of pagination
+### Notes of pagination
 
 I decided that `tasks` query would support offset-based pagination via `skip` and `take` arguments, mirroring Prisma's native pagination options directly.
 
@@ -424,7 +424,7 @@ The tasks query also has two independent and/or combinable filters which were de
 
 # Error Handling
 
-## Error Handling & Validation Examples
+### Error Handling & Validation Examples
 
 All query and mutation inputs are validated with Zod and error handled with functions found in errorhandling directory. Try using the following commands:
 
@@ -544,11 +544,11 @@ I chose offset-based pagination because I decided that a taskList application wo
 
 However, if the app would be designed to handle large volume, frequently changing,updated and rendered datasets in a infinite scroll feed, I would go with another form of pagination, like cursor based.
 
-## Error handling:
+### Error handling:
 
 I decided to deal with error handling by having a `validationCheck` helper function that runs a zod schema which returns a clean graphQL error code upon failure. This is to prevent a raw zod error leaking through to the user. I also chose a `entityLookUp` helper function that handles entity(id,name,title,etc) not found errors. This function checks if the record exists first and throws a not found error before Prisma gets a chance to throw its own unhandled error. Both are small, reusable helper functions that contain try/catch blocks. This means so resolvers can call the helper functions as a single line, rather than repeating try/catch blocks throughout the codebase to keep the codebase DRY.
 
-## Test suite decisions:
+### Test suite decisions:
 
 I wanted to ensure testing worked in a linear fashion, sanitising the data, addding to the database and returning the clean data for the user to view. I think this was integral for this project to prove that the data pipeline is functional. I also wanted to test an unhappy path with deleting a task, to ensure that a correct error handling message is provided as the brief requires.
 
@@ -557,7 +557,7 @@ I wanted to ensure testing worked in a linear fashion, sanitising the data, addd
 While making this project I found that when mapping Pothos types onto the Prisma models, I needed a way to handle mapping the relations(Tasks for TaskList). I researched and found a solution in the form of the `pothos/plugin-prisma`, which automatically handles nested queries into a single Prisma "include", instead of sending a query for each taskList. This seemed like killing two birds with one stone as
 I believe this solved the n+1 issue as a byproduct.
 
-## Dependency commands / Info
+# Dependency commands / Info
 
 ```
 
@@ -584,5 +584,5 @@ npm install -D vitest // testing framework for running unit or integration tests
 
 If I had more time I would ensure thorough testing through more complex sanitisation tests, unhappy path and edge cases.
 I would like to create an option to choose which pagination approach through a flag system in the create taskList mutation.
-I would also want to research and attempt using the dataLoader approach to handling the +1 issue.
+I would also want to research and attempt using the dataLoader approach to handling the n+1 issue.
 I would also like to research more into error handling as I am used to the MVC error handling process, passing status codes and messages around with helper functions.
