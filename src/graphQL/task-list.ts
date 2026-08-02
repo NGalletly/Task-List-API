@@ -2,6 +2,7 @@ import { builder } from "../builder";
 import { prisma } from "../db";
 import { z } from "zod";
 import { validationCheck } from "../errorhandling/validationCheck";
+import { entityLookUp } from "../errorhandling/entityLookUp";
 
 const addTaskListSchema = z.object({
   name: z.string().trim().min(1, "Task List name can't be empty"),
@@ -52,6 +53,10 @@ builder.mutationField("deleteTaskList", (t) =>
     },
     resolve: async (root, args) => {
       const { id } = validationCheck(deleteTaskListSchema, { id: args.id });
+      await entityLookUp(
+        () => prisma.taskList.findUnique({ where: { id } }),
+        "TaskList",
+      );
       await prisma.taskList.delete({
         where: {
           id,
