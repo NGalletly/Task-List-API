@@ -1,7 +1,9 @@
 import { builder } from "../builder";
 import { prisma } from "../db";
 import { z } from "zod";
+import { GraphQLError } from "graphql";
 import { validationCheck } from "../errorhandling/validationCheck";
+import { entityLookUp } from "../errorhandling/entityLookUp";
 
 const taskSchema = z.object({
   id: z.string().trim().min(1, "Id can't be empty"),
@@ -47,10 +49,13 @@ builder.queryField("task", (t) =>
     args: {
       id: t.arg.id({ required: true }),
     },
-    resolve: (query, root, args) => {
+    resolve: async (query, root, args) => {
       const { id } = validationCheck(taskSchema, { id: args.id });
-
-      return prisma.task.findUnique({ ...query, where: { id } });
+      const task = await entityLookUp(
+        () => prisma.task.findUnique({ ...query, where: { id } }),
+        "Task",
+      );
+      return task;
     },
   }),
 );
@@ -62,11 +67,16 @@ builder.mutationField("addTask", (t) =>
       title: t.arg.string({ required: true }),
       taskListId: t.arg.id({ required: true }),
     },
-    resolve: (query, root, args) => {
+    resolve: async (query, root, args) => {
       const { title, taskListId } = validationCheck(addTaskSchema, {
         title: args.title,
         taskListId: args.taskListId,
       });
+
+      await entityLookUp(
+        () => prisma.taskList.findUnique({ where: { id: taskListId } }),
+        "TaskList",
+      );
 
       return prisma.task.create({
         ...query,
@@ -84,6 +94,12 @@ builder.mutationField("deleteTask", (t) =>
     },
     resolve: async (root, args) => {
       const { id } = validationCheck(deleteTaskSchema, { id: args.id });
+
+      await entityLookUp(
+        () => prisma.task.findUnique({ where: { id } }),
+        "Task",
+      );
+
       await prisma.task.delete({
         where: {
           id,
@@ -102,16 +118,27 @@ builder.mutationField("updateTask", (t) =>
       title: t.arg.string({ required: false }),
       completed: t.arg.boolean({ required: false }),
     },
-    resolve: (query, root, args) => {
+    resolve: async (query, root, args) => {
       const { title, id, completed } = validationCheck(updateTaskSchema, {
         title: args.title,
         id: args.id,
         completed: args.completed,
       });
 
+      await entityLookUp(
+        () => prisma.task.findUnique({ where: { id } }),
+        "Task",
+      );
+
       const data: { title?: string; completed?: boolean } = {};
       if (title != null) data.title = title;
       if (completed != null) data.completed = completed;
+
+      if (Object.keys(data).length === 0) {
+        throw new GraphQLError("Nothing to update", {
+          extensions: { code: "INVALID_INPUT" },
+        });
+      }
 
       return prisma.task.update({
         ...query,
