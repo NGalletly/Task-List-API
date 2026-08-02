@@ -1,9 +1,10 @@
 import { builder } from "../builder";
 import { prisma } from "../db";
 import { z } from "zod";
+import { validationCheck } from "../errorhandling/validationCheck";
 
 const addTaskListSchema = z.object({
-  name: z.string().trim().min(1, "name can't be empty"),
+  name: z.string().trim().min(1, "Task List name can't be empty"),
 });
 
 const deleteTaskListSchema = z.object({
@@ -34,7 +35,7 @@ builder.mutationField("addTaskList", (t) =>
       name: t.arg.string({ required: true }),
     },
     resolve: (query, root, args) => {
-      const { name } = addTaskListSchema.parse({ name: args.name });
+      const { name } = validationCheck(addTaskListSchema, { name: args.name });
       return prisma.taskList.create({
         ...query,
         data: { name },
@@ -50,7 +51,7 @@ builder.mutationField("deleteTaskList", (t) =>
       id: t.arg.id({ required: true }),
     },
     resolve: async (root, args) => {
-      const { id } = deleteTaskListSchema.parse({ id: args.id });
+      const { id } = validationCheck(deleteTaskListSchema, { id: args.id });
       await prisma.taskList.delete({
         where: {
           id,
