@@ -22,6 +22,13 @@ const updateTaskSchema = z.object({
   completed: z.boolean().optional(),
 });
 
+const tasksQuerySchema = z.object({
+  completed: z.boolean().optional(),
+  taskListId: z.string().trim().min(1, "taskListId can't be empty").optional(),
+  skip: z.number().int().min(0, "skip can't be negative integer").optional(),
+  take: z.number().int().min(1, "take has to be at least 1").optional(),
+});
+
 builder.prismaObject("Task", {
   fields: (t) => ({
     id: t.exposeID("id"),
@@ -103,8 +110,8 @@ builder.mutationField("updateTask", (t) =>
       });
 
       const data: { title?: string; completed?: boolean } = {};
-      if (title != null) data.title = args.title;
-      if (completed != null) data.completed = args.completed;
+      if (title != null) data.title = title;
+      if (completed != null) data.completed = completed;
 
       return prisma.task.update({
         ...query,
@@ -134,13 +141,25 @@ builder.queryField("tasks", (t) =>
       take: t.arg.int({ required: false }),
     },
     resolve: async (root, args) => {
+      const {
+        completed,
+        taskListId,
+        skip: validatedSkip,
+        take: validatedTake,
+      } = validationCheck(tasksQuerySchema, {
+        completed: args.completed,
+        taskListId: args.taskListId,
+        skip: args.skip,
+        take: args.take,
+      });
+
       const where = {
-        ...(args.completed != null ? { completed: args.completed } : {}),
-        ...(args.taskListId != null ? { taskListId: args.taskListId } : {}),
+        ...(completed != null ? { completed } : {}),
+        ...(taskListId != null ? { taskListId } : {}),
       };
 
-      const skip = args.skip ?? 0;
-      const take = args.take ?? 20;
+      const skip = validatedSkip ?? 0;
+      const take = validatedTake ?? 20;
 
       const [items, totalCount] = await Promise.all([
         prisma.task.findMany({

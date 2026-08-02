@@ -428,6 +428,112 @@ I chose offset-based pagination because I decided that a taskList application wo
 
 However, if the app would be designed to handle large volume, frequently changing,updated and rendered datasets in a infinite scroll feed, I would go with another form of pagination, like cursor based.
 
+# Error Handling
+
+## Error Handling & Validation Examples
+
+All query and mutation inputs are validated with Zod and error handled with functions found in errorhandling directory. Try using the following commands:
+
+Empty / whitespace-only name (TaskList) : Expected error: "name can't be empty"
+
+```
+mutation {
+  addTaskList(name: "   ") {
+    id
+    name
+  }
+}
+```
+
+Empty / whitespace-only id (TaskList) : Expected error: "id can't be empty"
+
+```
+mutation {
+  deleteTaskList(id: "   ")
+}
+```
+
+Empty / whitespace-only task title : Expected error: "Task title can't be empty"
+
+```
+mutation {
+  addTask(title: "   ", taskListId: "some-real-id") {
+    id
+    title
+  }
+}
+
+```
+
+Empty / whitespace-only task id, Expected error (all three): "Id can't be empty"
+
+```
+
+query {
+  task(id: "   ") {
+    id
+    title
+  }
+}
+
+mutation {
+  deleteTask(id: "   ")
+}
+
+mutation {
+  updateTask(id: "   ", title: "New title") {
+    id
+    title
+  }
+}
+
+```
+
+Negative skip on pagination , expected error: "skip can't be negative integer"
+
+```
+query {
+  tasks(skip: -1) {
+    items { title }
+  }
+}
+
+```
+
+Take check to be 1 or greater, expected error: "take has to be at least 1"
+
+```
+query {
+  tasks(take: 0) {
+    items { title }
+  }
+}
+```
+
+Empty taskListId filter, expected error: "taskListId can't be empty"
+
+```
+query {
+  tasks(taskListId: "   ") {
+    items { title }
+  }
+}
+```
+
+### Example error response shape
+
+{
+"errors": [
+{
+"message": "skip can't be negative integer",
+"extensions": {
+"code": "INVALID_INPUT"
+}
+}
+],
+"data": null
+}
+
 ## Dependency commands / Info
 
 ```
