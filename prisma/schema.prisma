@@ -32,7 +32,7 @@ model Task {
   completed Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  taskList TaskList @relation(fields: [taskListId], references: [id])
+  taskList TaskList @relation(fields: [taskListId], references: [id], onDelete: Cascade)
   taskListId String
   
 }
