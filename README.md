@@ -55,7 +55,7 @@ docker ps
 
 Delete pgadmin-data and init.sql directories for housekeeping if desired.
 
-Once the Docker container is running, add the schema to the database by running the following commands:
+Once the Docker container is running, add the schema to the database by running the following commands :
 
 ```
 npx prisma generate
