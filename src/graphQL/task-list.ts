@@ -1,5 +1,14 @@
 import { builder } from "../builder";
 import { prisma } from "../db";
+import { z } from "zod";
+
+const addTaskListSchema = z.object({
+  name: z.string().trim().min(1, "name can't be empty"),
+});
+
+const deleteTaskListSchema = z.object({
+  id: z.string().trim().min(1, "id can't be empty"),
+});
 
 builder.prismaObject("TaskList", {
   fields: (t) => ({
@@ -24,13 +33,13 @@ builder.mutationField("addTaskList", (t) =>
     args: {
       name: t.arg.string({ required: true }),
     },
-    resolve: (query, root, args) =>
-      prisma.taskList.create({
+    resolve: (query, root, args) => {
+      const { name } = addTaskListSchema.parse({ name: args.name });
+      return prisma.taskList.create({
         ...query,
-        data: {
-          name: args.name,
-        },
-      }),
+        data: { name },
+      });
+    },
   }),
 );
 
@@ -41,9 +50,10 @@ builder.mutationField("deleteTaskList", (t) =>
       id: t.arg.id({ required: true }),
     },
     resolve: async (root, args) => {
+      const { id } = deleteTaskListSchema.parse({ id: args.id });
       await prisma.taskList.delete({
         where: {
-          id: args.id,
+          id,
         },
       });
       return true;
