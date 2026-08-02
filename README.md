@@ -55,9 +55,10 @@ docker ps
 
 Delete pgadmin-data and init.sql directories for housekeeping if desired.
 
-Once the Docker container is running, add the schema to the database by running the following command:
+Once the Docker container is running, add the schema to the database by running the following commands :
 
 ```
+npx prisma generate
 npx prisma migrate dev --name init
 ```
 
@@ -89,6 +90,7 @@ If migrations go out of sync or have trouble, try clearing cache and remigrating
 docker-compose down
 rm -rf db-data
 docker-compose up -d
+npx prisma generate
 npx prisma migrate dev --name init
 ```
 
