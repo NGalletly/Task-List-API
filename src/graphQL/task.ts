@@ -1,5 +1,33 @@
 import { builder } from "../builder";
 import { prisma } from "../db";
+import { z } from "zod";
+import { validationCheck } from "../errorhandling/validationCheck";
+
+const taskSchema = z.object({
+  id: z.string().trim().min(1, "Id can't be empty"),
+});
+
+const addTaskSchema = z.object({
+  title: z.string().trim().min(1, "Task title can't be empty"),
+  taskListId: z.string().trim().min(1, "TaskList Id can't be empty"),
+});
+
+const deleteTaskSchema = z.object({
+  id: z.string().trim().min(1, "Id can't be empty"),
+});
+
+const updateTaskSchema = z.object({
+  id: z.string().trim().min(1, "Id can't be empty"),
+  title: z.string().trim().min(1, "Task title can't be empty.").optional(),
+  completed: z.boolean().optional(),
+});
+
+const tasksQuerySchema = z.object({
+  completed: z.boolean().optional(),
+  taskListId: z.string().trim().min(1, "taskListId can't be empty").optional(),
+  skip: z.number().int().min(0, "skip can't be negative integer").optional(),
+  take: z.number().int().min(1, "take has to be at least 1").optional(),
+});
 
 builder.prismaObject("Task", {
   fields: (t) => ({
@@ -19,8 +47,11 @@ builder.queryField("task", (t) =>
     args: {
       id: t.arg.id({ required: true }),
     },
-    resolve: (query, root, args) =>
-      prisma.task.findUnique({ ...query, where: { id: args.id } }),
+    resolve: (query, root, args) => {
+      const { id } = validationCheck(taskSchema, { id: args.id });
+
+      return prisma.task.findUnique({ ...query, where: { id } });
+    },
   }),
 );
 
@@ -31,11 +62,17 @@ builder.mutationField("addTask", (t) =>
       title: t.arg.string({ required: true }),
       taskListId: t.arg.id({ required: true }),
     },
-    resolve: (query, root, args) =>
-      prisma.task.create({
+    resolve: (query, root, args) => {
+      const { title, taskListId } = validationCheck(addTaskSchema, {
+        title: args.title,
+        taskListId: args.taskListId,
+      });
+
+      return prisma.task.create({
         ...query,
-        data: { title: args.title, taskListId: args.taskListId },
-      }),
+        data: { title, taskListId },
+      });
+    },
   }),
 );
 
@@ -46,9 +83,10 @@ builder.mutationField("deleteTask", (t) =>
       id: t.arg.id({ required: true }),
     },
     resolve: async (root, args) => {
+      const { id } = validationCheck(deleteTaskSchema, { id: args.id });
       await prisma.task.delete({
         where: {
-          id: args.id,
+          id,
         },
       });
       return true;
@@ -65,13 +103,19 @@ builder.mutationField("updateTask", (t) =>
       completed: t.arg.boolean({ required: false }),
     },
     resolve: (query, root, args) => {
+      const { title, id, completed } = validationCheck(updateTaskSchema, {
+        title: args.title,
+        id: args.id,
+        completed: args.completed,
+      });
+
       const data: { title?: string; completed?: boolean } = {};
-      if (args.title != null) data.title = args.title;
-      if (args.completed != null) data.completed = args.completed;
+      if (title != null) data.title = title;
+      if (completed != null) data.completed = completed;
 
       return prisma.task.update({
         ...query,
-        where: { id: args.id },
+        where: { id },
         data,
       });
     },
@@ -97,13 +141,25 @@ builder.queryField("tasks", (t) =>
       take: t.arg.int({ required: false }),
     },
     resolve: async (root, args) => {
+      const {
+        completed,
+        taskListId,
+        skip: validatedSkip,
+        take: validatedTake,
+      } = validationCheck(tasksQuerySchema, {
+        completed: args.completed,
+        taskListId: args.taskListId,
+        skip: args.skip,
+        take: args.take,
+      });
+
       const where = {
-        ...(args.completed != null ? { completed: args.completed } : {}),
-        ...(args.taskListId != null ? { taskListId: args.taskListId } : {}),
+        ...(completed != null ? { completed } : {}),
+        ...(taskListId != null ? { taskListId } : {}),
       };
 
-      const skip = args.skip ?? 0;
-      const take = args.take ?? 20;
+      const skip = validatedSkip ?? 0;
+      const take = validatedTake ?? 20;
 
       const [items, totalCount] = await Promise.all([
         prisma.task.findMany({
