@@ -422,12 +422,6 @@ The tasks query also has two independent and/or combinable filters which were de
 - `taskListId` : scope results to a single task list
 - `completed` :filter tasks by completion status
 
-### Why offset-based pagination
-
-I chose offset-based pagination because I decided that a taskList application would be utilised as a personal application, with smaller data sets set so customised task lists and jumping to decisive pages user would have or use. This approach could scale to small teams.
-
-However, if the app would be designed to handle large volume, frequently changing,updated and rendered datasets in a infinite scroll feed, I would go with another form of pagination, like cursor based.
-
 # Error Handling
 
 ## Error Handling & Validation Examples
@@ -534,6 +528,35 @@ query {
 "data": null
 }
 
+# Testing
+
+To test ensure that vitest is installed and run the following command:
+
+```
+npm run test
+```
+
+# Decisions and design choices
+
+### Why offset-based pagination:
+
+I chose offset-based pagination because I decided that a taskList application would be utilised as a personal application, with smaller data sets set so customised task lists and jumping to decisive pages user would have or use. This approach could scale to small teams.
+
+However, if the app would be designed to handle large volume, frequently changing,updated and rendered datasets in a infinite scroll feed, I would go with another form of pagination, like cursor based.
+
+## Error handling:
+
+I decided to deal with error handling by having a `validationCheck` helper function that runs a zod schema which returns a clean graphQL error code upon failure. This is to prevent a raw zod error leaking through to the user. I also chose a `entityLookUp` helper function that handles entity(id,name,title,etc) not found errors. This function checks if the record exists first and throws a not found error before Prisma gets a chance to throw its own unhandled error. Both are small, reusable helper functions that contain try/catch blocks. This means so resolvers can call the helper functions as a single line, rather than repeating try/catch blocks throughout the codebase to keep the codebase DRY.
+
+## Test suite decisions:
+
+I wanted to ensure testing worked in a linear fashion, sanitising the data, addding to the database and returning the clean data for the user to view. I think this was integral for this project to prove that the data pipeline is functional. I also wanted to test an unhappy path with deleting a task, to ensure that a correct error handling message is provided as the brief requires.
+
+### Handling the N+1 issue
+
+While making this project I found that when mapping Pothos types onto the Prisma models, I needed a way to handle mapping the relations(Tasks for TaskList). I researched and found a solution in the form of the `pothos/plugin-prisma`, which automatically handles nested queries into a single Prisma "include", instead of sending a query for each taskList. This seemed like killing two birds with one stone as
+I believe this solved the n+1 issue as a byproduct.
+
 ## Dependency commands / Info
 
 ```
@@ -556,3 +579,10 @@ npm install zod // typescript schema validation, checks that data matches expect
 npm install -D vitest // testing framework for running unit or integration tests
 
 ```
+
+# Extension additions
+
+If I had more time I would ensure thorough testing through more complex sanitisation tests, unhappy path and edge cases.
+I would like to create an option to choose which pagination approach through a flag system in the create taskList mutation.
+I would also want to research and attempt using the dataLoader approach to handling the +1 issue.
+I would also like to research more into error handling as I am used to the MVC error handling process, passing status codes and messages around with helper functions.
